@@ -91,7 +91,7 @@ if __name__ == '__main__':
         get_data(names[i])
 
     jpype.startJVM(jpype.getDefaultJVMPath(),
-                   "-Djava.class.path=C:/Users/t23463int/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
+                   "-Djava.class.path=C:/Users/emir/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
     tr = jpype.JClass("net.zemberek.tr.yapi.TurkiyeTurkcesi")
     tr = tr()
     Zemberek = jpype.JClass("net.zemberek.erisim.Zemberek")
@@ -133,20 +133,6 @@ if __name__ == '__main__':
 
     cross_val_score = sum(q) / len(q)
     print(cross_val_score)
-
-    vectorizer = TfidfVectorizer(min_df=3, max_df=0.6, stop_words=stop_words, use_idf=True)
-    X = vectorizer.fit_transform(df["Comment"]).toarray()
-    features = vectorizer.get_feature_names()
-    tfidf_df = pd.DataFrame(np.round(X, 3), columns=features)
-    text_train, text_test, sent_train, sent_test = train_test_split(X, df["Sentiment"].values.ravel(), test_size=0.2,
-                                                                    random_state=33)
-
-    classifier = LogisticRegression(solver="lbfgs",multi_class="ovr")
-    classifier.fit(text_train,sent_train)
-
-    sent_pred = classifier.predict(text_test)
-    print(accuracy_score(sent_test,sent_pred))
-
 
     gnb = GaussianNB()
     gnb.fit(text_train, sent_train)

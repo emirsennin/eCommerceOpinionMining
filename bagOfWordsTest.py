@@ -11,6 +11,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
 from matplotlib import pyplot
+import numpy as np
 
 #reference file : https://machinelearningmastery.com/deep-learning-bag-of-words-model-sentiment-analysis/
 
@@ -113,7 +114,7 @@ if __name__ == '__main__':
         get_data(names[i])
 
     jpype.startJVM(jpype.getDefaultJVMPath(),
-                   "-Djava.class.path=C:/Users/t23463int/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
+                   "-Djava.class.path=C:/Users/emir/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
     tr = jpype.JClass("net.zemberek.tr.yapi.TurkiyeTurkcesi")
     tr = tr()
     Zemberek = jpype.JClass("net.zemberek.erisim.Zemberek")
@@ -134,10 +135,17 @@ if __name__ == '__main__':
     # vocab_filename = "vocab.txt"
     # vocab = load_doc(vocab_filename)
     # vocab = vocab.split()
-    min_occurance = 2
+    min_occurance = 50
     tokens = [k for k,c in vocab.items() if c >= min_occurance]
     print(len(tokens))
     vocab = set(tokens)
+
+    # df_ternary = df.copy()
+    # df_ternary['Sentiment'] = df_ternary['Sentiment'].map({5: 4, 4: 4, 3: 3, 2: 2, 1: 2})
+    #
+    # tern_pos = process_docs(list(df_ternary[df_ternary["Sentiment"] == 4].iloc[:, 0:1].Comment),vocab)
+    # tern_neut = process_docs(list(df_ternary[df_ternary["Sentiment"] == 3].iloc[:, 0:1].Comment),vocab)
+    # tern_neg = process_docs(list(df_ternary[df_ternary["Sentiment"] == 2].iloc[:, 0:1].Comment),vocab)
 
     very_pos_lines = process_docs(list(df[df["Sentiment"] == 5].iloc[:, 0:1].Comment),vocab)
     pos_lines = process_docs(list(df[df["Sentiment"] == 4].iloc[:, 0:1].Comment),vocab)
@@ -148,11 +156,14 @@ if __name__ == '__main__':
 
     tokenizer = Tokenizer()
 
+    # linesplitters = [int(len(tern_pos)*0.8),int(len(tern_neut)*0.8),int(len(tern_neg)*0.8)]
+    # train_docs = tern_pos[0:linesplitters[0]] + tern_neut[0:linesplitters[1]] +tern_neg[0:linesplitters[2]]
     linesplitters =[int(len(very_pos_lines)*0.8),int(len(pos_lines)*0.8),int(len(neut_lines)*0.8),int(len(neg_lines)*0.8),int(len(very_neg_lines)*0.8)]
-    test_docs = very_pos_lines[0:linesplitters[0]]+pos_lines[0:linesplitters[1]]+neut_lines[0:linesplitters[2]]+neg_lines[0:linesplitters[3]]+very_neg_lines[0:linesplitters[4]]
-    print(len(test_docs))
-    train_docs = very_pos_lines[linesplitters[0]:]+pos_lines[linesplitters[1]:]+neut_lines[linesplitters[2]:]+neg_lines[linesplitters[3]:]+very_neg_lines[linesplitters[4]:]
+    train_docs= very_pos_lines[0:linesplitters[0]]+pos_lines[0:linesplitters[1]]+neut_lines[0:linesplitters[2]]+neg_lines[0:linesplitters[3]]+very_neg_lines[0:linesplitters[4]]
     print(len(train_docs))
+    # test_docs =tern_pos[linesplitters[0]:]+tern_neut[linesplitters[1]:]+tern_neg[linesplitters[2]:]
+    test_docs = very_pos_lines[linesplitters[0]:]+pos_lines[linesplitters[1]:]+neut_lines[linesplitters[2]:]+neg_lines[linesplitters[3]:]+very_neg_lines[linesplitters[4]:]
+    print(len(test_docs))
 
     tokenizer.fit_on_texts(train_docs)
     Xtrain = tokenizer.texts_to_matrix(train_docs, mode='freq')
@@ -160,19 +171,27 @@ if __name__ == '__main__':
     Xtest = tokenizer.texts_to_matrix(test_docs,mode='freq')
     print(Xtest.shape)
     n_words = Xtest.shape[1]
-    ytrain = ([5 for _ in range(linesplitters[0])]+
+
+    # ytrain = np.array([4 for _ in range(linesplitters[0])]+
+    #                [3 for _ in range(linesplitters[1])]+
+    #                [2 for _ in range(linesplitters[2])])
+    # ytest = np.array([4 for _ in range((len(tern_pos) - linesplitters[0]))]+
+    #                [3 for _ in range((len(tern_neut) - linesplitters[1]))]+
+    #                [2 for _ in range((len(tern_neg) - linesplitters[2]))])
+
+    ytrain = np.array([5 for _ in range(linesplitters[0])]+
                    [4 for _ in range(linesplitters[1])]+
                    [3 for _ in range(linesplitters[2])]+
                    [2 for _ in range(linesplitters[3])]+
                    [1 for _ in range(linesplitters[4])])
-    ytest = ([5 for _ in range((len(very_pos_lines) - linesplitters[0]))]+
+    ytest = np.array([5 for _ in range((len(very_pos_lines) - linesplitters[0]))]+
                    [4 for _ in range((len(pos_lines) - linesplitters[1]))]+
                    [3 for _ in range((len(neut_lines) - linesplitters[2]))]+
                    [2 for _ in range((len(neg_lines) - linesplitters[3]))]+
                    [1 for _ in range((len(very_neg_lines) - linesplitters[4]))])
     print(ytest)
 
-    modes = ['binary','count','tfidf','freq']
+    modes = ['freq','binary','count','tfidf']
     results = pd.DataFrame()
     for mode in modes:
         tokenizer.fit_on_texts(train_docs)
