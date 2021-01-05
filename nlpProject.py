@@ -91,7 +91,7 @@ if __name__ == '__main__':
         get_data(names[i])
 
     jpype.startJVM(jpype.getDefaultJVMPath(),
-                   "-Djava.class.path=C:/Users/emir/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
+                   "-Djava.class.path=C:/Users/t23463int/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
     tr = jpype.JClass("net.zemberek.tr.yapi.TurkiyeTurkcesi")
     tr = tr()
     Zemberek = jpype.JClass("net.zemberek.erisim.Zemberek")
