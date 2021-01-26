@@ -12,6 +12,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn import neighbors
 from sklearn import tree
@@ -91,7 +95,7 @@ if __name__ == '__main__':
         get_data(names[i])
 
     jpype.startJVM(jpype.getDefaultJVMPath(),
-                   "-Djava.class.path=C:/Users/t23463int/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
+                   "-Djava.class.path=C:/Users/emir/PycharmProjects/nlpProject/zemberek-tum-2.0.jar", "-ea")
     tr = jpype.JClass("net.zemberek.tr.yapi.TurkiyeTurkcesi")
     tr = tr()
     Zemberek = jpype.JClass("net.zemberek.erisim.Zemberek")
@@ -122,6 +126,7 @@ if __name__ == '__main__':
     classifier.fit(text_train, sent_train)
     sent_pred = classifier.predict(text_test)
 
+    print("Logistic Regression")
     print(accuracy_score(sent_test, sent_pred))
 
     q = cross_val_score(classifier, text_train, sent_train, cv=10)
@@ -138,27 +143,30 @@ if __name__ == '__main__':
     gnb.fit(text_train, sent_train)
 
     sent_gnn_predict = gnb.predict(text_test)
+    print("Gaussian Naive Bayes")
     print(accuracy_score(sent_test, sent_gnn_predict))
 
     knn = neighbors.KNeighborsClassifier(n_neighbors=5)
     knn.fit(text_train, sent_train)
 
     sent_knn_predict = knn.predict(text_test)
+    print("K-nn")
     print(accuracy_score(sent_test, sent_knn_predict))
-
 
     dct = tree.DecisionTreeClassifier()
     dct.fit(text_train, sent_train)
 
     sent_dct_predict = dct.predict(text_test)
+    print("Desicion Tree")
     print(accuracy_score(sent_test, sent_dct_predict))
-
 
     rf = RandomForestClassifier(n_estimators=200)
     rf.fit(text_train, sent_train)
 
     sent_rf_predict = rf.predict(text_test)
+    print("Random Forest")
     print(accuracy_score(sent_test, sent_rf_predict))
+
 
 
     q = cross_val_score(classifier, text_train, sent_train, cv=6)
