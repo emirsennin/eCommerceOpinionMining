@@ -21,7 +21,7 @@ from sklearn import neighbors
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
-
+from sklearn.metrics import plot_confusion_matrix
 
 names = ["trendyol","hepsiburada","amazon","n11","yemeksepeti"]
 
@@ -128,6 +128,9 @@ if __name__ == '__main__':
 
     print("Logistic Regression")
     print(accuracy_score(sent_test, sent_pred))
+    disp = plot_confusion_matrix(classifier, text_test, sent_test)
+    disp.ax_.set_title("Logistic Regression")
+    plt.show()
 
     q = cross_val_score(classifier, text_train, sent_train, cv=10)
 
@@ -145,6 +148,9 @@ if __name__ == '__main__':
     sent_gnn_predict = gnb.predict(text_test)
     print("Gaussian Naive Bayes")
     print(accuracy_score(sent_test, sent_gnn_predict))
+    disp = plot_confusion_matrix(gnb, text_test, sent_test)
+    disp.ax_.set_title("Gaussian Naive Bayes")
+    plt.show()
 
     knn = neighbors.KNeighborsClassifier(n_neighbors=5)
     knn.fit(text_train, sent_train)
@@ -152,6 +158,9 @@ if __name__ == '__main__':
     sent_knn_predict = knn.predict(text_test)
     print("K-nn")
     print(accuracy_score(sent_test, sent_knn_predict))
+    disp = plot_confusion_matrix(knn, text_test, sent_test)
+    disp.ax_.set_title("K-nn")
+    plt.show()
 
     dct = tree.DecisionTreeClassifier()
     dct.fit(text_train, sent_train)
@@ -159,6 +168,9 @@ if __name__ == '__main__':
     sent_dct_predict = dct.predict(text_test)
     print("Desicion Tree")
     print(accuracy_score(sent_test, sent_dct_predict))
+    disp = plot_confusion_matrix(dct, text_test, sent_test)
+    disp.ax_.set_title("Desicion Tree")
+    plt.show()
 
     rf = RandomForestClassifier(n_estimators=200)
     rf.fit(text_train, sent_train)
@@ -166,6 +178,9 @@ if __name__ == '__main__':
     sent_rf_predict = rf.predict(text_test)
     print("Random Forest")
     print(accuracy_score(sent_test, sent_rf_predict))
+    disp = plot_confusion_matrix(rf, text_test, sent_test)
+    disp.ax_.set_title("Random Forest")
+    plt.show()
 
 
 
